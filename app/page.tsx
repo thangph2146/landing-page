@@ -1,103 +1,183 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import { Suspense } from 'react';
+import { motion } from 'framer-motion';
+import HeroSection from '@/components/sections/HeroSection';
+import ProgramOverview from '@/components/sections/ProgramOverview';
+import CareerOpportunities from '@/components/sections/CareerOpportunities';
+import AdmissionProcess from '@/components/sections/AdmissionProcess';
+import RegistrationForm from '@/components/sections/RegistrationForm';
+import Footer from '@/components/sections/Footer';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { Loader2 } from 'lucide-react';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+// Loading component
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="text-center">
+      <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+      <p className="text-muted-foreground text-lg">Đang tải...</p>
     </div>
+  </div>
+);
+
+// Section wrapper with loading state
+const SectionWrapper = ({ children, className = "", id }: { children: React.ReactNode; className?: string; id?: string }) => (
+  <Suspense fallback={<LoadingSpinner />}>
+    <motion.div
+      id={id}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  </Suspense>
+);
+
+export default function HomePage() {
+  // Hero section data
+  const heroData = {
+    title: "Tài chính - Ngân hàng CLC",
+    subtitle: "Chương trình Chất lượng cao với chuẩn quốc tế",
+    description: "Đào tạo chuyên gia tài chính ngân hàng với kiến thức vững vàng, kỹ năng thực tế và tư duy sáng tạo, đáp ứng nhu cầu của thị trường lao động trong và ngoài nước.",
+    videoUrl: "/api/placeholder/800/450",
+    backgroundImage: "/api/placeholder/1920/1080",
+    ctaText: "Đăng ký tư vấn ngay",
+    secondaryCtaText: "Tìm hiểu chương trình",
+    trustBadges: [
+      {
+        id: "1",
+        name: "Top 10 chương trình CLC",
+        imageUrl: "/api/placeholder/60/60",
+        alt: "Top 10 chương trình CLC - Được xếp hạng cao nhất Việt Nam"
+      },
+      {
+        id: "2",
+        name: "Chuẩn quốc tế",
+        imageUrl: "/api/placeholder/60/60",
+        alt: "Chuẩn quốc tế - Liên kết với 50+ trường đại học"
+      },
+      {
+        id: "3",
+        name: "95% có việc làm",
+        imageUrl: "/api/placeholder/60/60",
+        alt: "95% có việc làm - Sau 6 tháng tốt nghiệp"
+      },
+      {
+        id: "4",
+        name: "Mức lương cao",
+        imageUrl: "/api/placeholder/60/60",
+        alt: "Mức lương cao - 15-25 triệu VNĐ khởi điểm"
+      }
+    ],
+    statistics: [
+      {
+        number: "5000+",
+        label: "Sinh viên tốt nghiệp",
+        description: "Đang làm việc tại các tập đoàn lớn"
+      },
+      {
+        number: "50+",
+        label: "Đối tác quốc tế",
+        description: "Trường đại học và doanh nghiệp"
+      },
+      {
+        number: "95%",
+        label: "Tỷ lệ có việc làm",
+        description: "Trong vòng 6 tháng sau tốt nghiệp"
+      }
+    ],
+    keyBenefits: [
+      "Học phí ưu đãi với nhiều học bổng",
+      "Thực tập tại các ngân hàng lớn",
+      "Cơ hội du học và trao đổi quốc tế",
+      "Hỗ trợ việc làm sau tốt nghiệp"
+    ]
+  };
+
+  return (
+    <main className="min-h-screen bg-background text-foreground">
+      {/* Theme Toggle - Fixed position */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+      {/* Hero Section */}
+      <SectionWrapper>
+        <HeroSection
+          title={heroData.title}
+          subtitle={heroData.subtitle}
+          videoUrl={heroData.videoUrl}
+          backgroundImage={heroData.backgroundImage}
+          ctaText={heroData.ctaText}
+          trustBadges={heroData.trustBadges}
+        />
+      </SectionWrapper>
+
+      {/* Program Overview Section */}
+      <SectionWrapper id="program-overview">
+        <ProgramOverview />
+      </SectionWrapper>
+
+      {/* Career Opportunities Section */}
+      <SectionWrapper>
+        <CareerOpportunities />
+      </SectionWrapper>
+
+      {/* Admission Process Section */}
+      <SectionWrapper>
+        <AdmissionProcess />
+      </SectionWrapper>
+
+      {/* Registration Form Section */}
+      <SectionWrapper id="registration-form">
+        <RegistrationForm />
+      </SectionWrapper>
+
+      {/* Footer Section */}
+      <SectionWrapper>
+        <Footer />
+      </SectionWrapper>
+
+      {/* Scroll Progress Indicator */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-accent z-50 origin-left"
+        style={{
+          scaleX: 0
+        }}
+        whileInView={{
+          scaleX: 1
+        }}
+        transition={{
+          duration: 0.3
+        }}
+      />
+
+      {/* Back to Top Button */}
+      <motion.button
+        className="fixed bottom-20 right-6 w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 flex items-center justify-center"
+        initial={{ opacity: 0, scale: 0 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 10l7-7m0 0l7 7m-7-7v18"
+          />
+        </svg>
+      </motion.button>
+    </main>
   );
 }
